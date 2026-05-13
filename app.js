@@ -121,62 +121,6 @@ function seedDemoEvents() {
       desc: 'Morning sync with the full team.',
       createdBy: 'Alex Kim', createdByInitials: 'AK', createdByColor: '#4f9cf9'
     },
-    {
-      id: 2, title: 'Product Review',
-      date: `${y}-${mon}-${d}`, start: '11:00', end: '12:30',
-      category: 'work', color: '#a78bfa', urgency: 'critical',
-      labels: ['q3', 'stakeholders'],
-      desc: 'Quarterly product review with leadership.',
-      createdBy: 'Priya Shah', createdByInitials: 'PS', createdByColor: '#a78bfa'
-    },
-    {
-      id: 3, title: 'Gym Session',
-      date: `${y}-${mon}-${d}`, start: '07:00', end: '08:00',
-      category: 'health', color: '#34d399', urgency: 'low',
-      labels: ['fitness'],
-      desc: 'Leg day at the gym.',
-      createdBy: 'Jordan Lee', createdByInitials: 'JL', createdByColor: '#34d399'
-    },
-    {
-      id: 4, title: 'Design Sprint',
-      date: `${ty}-${tm}-${td}`, start: '10:00', end: '16:00',
-      category: 'focus', color: '#fbbf24', urgency: 'high',
-      labels: ['design', 'sprint'],
-      desc: 'Full-day design sprint for new feature.',
-      createdBy: 'Marcus T.', createdByInitials: 'MT', createdByColor: '#fb923c'
-    },
-    {
-      id: 5, title: 'Client Call',
-      date: `${ty}-${tm}-${td}`, start: '14:00', end: '15:00',
-      category: 'urgent', color: '#f87171', urgency: 'critical',
-      labels: ['client', 'sales'],
-      desc: 'Important call with key client.',
-      createdBy: 'Alex Kim', createdByInitials: 'AK', createdByColor: '#4f9cf9'
-    },
-    {
-      id: 6, title: 'Lunch with Team',
-      date: `${ty}-${tm}-${td}`, start: '12:30', end: '13:30',
-      category: 'social', color: '#fb923c', urgency: 'low',
-      labels: ['team', 'social'],
-      desc: 'Team bonding lunch.',
-      createdBy: 'Yuki O.', createdByInitials: 'YO', createdByColor: '#fbbf24'
-    },
-    {
-      id: 7, title: 'Weekly Retro',
-      date: `${ny}-${nm}-${nd}`, start: '15:00', end: '16:00',
-      category: 'work', color: '#4f9cf9', urgency: 'medium',
-      labels: ['agile'],
-      desc: 'Weekly retrospective meeting.',
-      createdBy: 'Priya Shah', createdByInitials: 'PS', createdByColor: '#a78bfa'
-    },
-    {
-      id: 8, title: 'Dentist Appt.',
-      date: pdat, start: '09:00', end: '10:00',
-      category: 'health', color: '#2dd4bf', urgency: 'medium',
-      labels: ['health'],
-      desc: 'Regular dental checkup.',
-      createdBy: 'Jordan Lee', createdByInitials: 'JL', createdByColor: '#34d399'
-    }
   ];
   saveEvents();
 }
@@ -419,58 +363,81 @@ function showDayPanel(dateStr) {
   }
 
   document.getElementById('panelEvents').innerHTML = dayEvents.map(ev => {
-    const urg      = URGENCY.find(u => u.key === ev.urgency) || URGENCY[2];
+    const urg       = URGENCY.find(u => u.key === ev.urgency) || URGENCY[2];
     const countdown = getCountdown(ev);
     const progress  = getProgress(ev);
     const bgDark    = hexToRgba(ev.color, 0.18);
 
     return `
-      <div class="panel-event-card"
-           style="background:${bgDark};border-left-color:${ev.color}"
-           onclick="openEditModal('${ev.id}')">
+      <div class="panel-event-card" id="pcard-${ev.id}"
+           style="background:${bgDark};border-left-color:${ev.color}">
 
-        <div class="pev-title">${ev.title}</div>
-        <div class="pev-time">${ev.start} – ${ev.end}</div>
+        <!-- Card header row: title + action buttons -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px">
+          <div style="flex:1;min-width:0;cursor:pointer" onclick="openEditModal('${ev.id}')">
+            <div class="pev-title">${ev.title}</div>
+            <div class="pev-time">${ev.start} – ${ev.end}</div>
+          </div>
+          <!-- Action buttons -->
+          <div style="display:flex;gap:4px;flex-shrink:0;margin-top:1px">
+            <button class="pev-action-btn pev-edit-btn"
+                    title="Edit event"
+                    onclick="openEditModal('${ev.id}')">✎</button>
+            <button class="pev-action-btn pev-delete-btn"
+                    title="Delete event"
+                    onclick="confirmDeleteEvent('${ev.id}','${ev.title.replace(/'/g,"\\'")}')">✕</button>
+          </div>
+        </div>
 
         <!-- Author -->
-        <div style="margin-top:5px">${authorChip(ev, 'md')}</div>
+        <div style="margin-top:5px;cursor:pointer" onclick="openEditModal('${ev.id}')">
+          ${authorChip(ev, 'md')}
+        </div>
 
         <!-- Badges -->
-        <div class="pev-meta">
-          <span class="badge"
-                style="background:${urg.color}40;color:${urg.color}">
+        <div class="pev-meta" style="cursor:pointer" onclick="openEditModal('${ev.id}')">
+          <span class="badge" style="background:${urg.color}40;color:${urg.color}">
             ${urg.label}
           </span>
-          <span class="badge" style="background:rgba(255,255,255,0.1)">
-            ${ev.category}
-          </span>
+          <span class="badge" style="background:rgba(255,255,255,0.1)">${ev.category}</span>
         </div>
 
         <!-- Countdown -->
         ${countdown
-          ? `<div class="pev-countdown">⏱ ${countdown}</div>`
+          ? `<div class="pev-countdown" style="cursor:pointer" onclick="openEditModal('${ev.id}')">
+               ⏱ ${countdown}
+             </div>`
           : ''}
 
         <!-- Progress bar (if in progress) -->
         ${progress !== null
           ? `<div class="countdown-bar-wrap">
-               <div class="countdown-bar"
-                    style="width:${progress}%;background:${ev.color}">
-               </div>
+               <div class="countdown-bar" style="width:${progress}%;background:${ev.color}"></div>
              </div>`
           : ''}
 
         <!-- Labels -->
         ${ev.labels && ev.labels.length
-          ? `<div class="pev-labels">
+          ? `<div class="pev-labels" style="cursor:pointer" onclick="openEditModal('${ev.id}')">
                ${ev.labels.map(l => `<span class="label-tag">${l}</span>`).join('')}
              </div>`
           : ''}
 
         <!-- Description -->
         ${ev.desc
-          ? `<div class="pev-desc">${ev.desc}</div>`
+          ? `<div class="pev-desc" style="cursor:pointer" onclick="openEditModal('${ev.id}')">${ev.desc}</div>`
           : ''}
+
+        <!-- Inline confirm row (hidden by default, shown by confirmDeleteEvent) -->
+        <div id="confirm-${ev.id}" class="pev-confirm-row" style="display:none">
+          <span style="font-size:12px;color:var(--muted)">Delete "<strong style="color:var(--text)">${ev.title}</strong>"?</span>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="pev-confirm-yes"
+                    onclick="deleteEvent('${ev.id}')">Yes, delete</button>
+            <button class="pev-confirm-no"
+                    onclick="cancelDeleteEvent('${ev.id}')">Cancel</button>
+          </div>
+        </div>
       </div>
     `;
   }).join('');
@@ -1128,23 +1095,7 @@ function hexToRgba(hex, alpha) {
 
 /* ── REALTIME SIMULATION ────────────────────────────────────── */
 
-function simulateRealtime() {
-  // Randomly cycle user statuses
-  setInterval(() => {
-    const u      = USERS[Math.floor(Math.random() * USERS.length)];
-    const states = ['online', 'online', 'online', 'away', 'busy'];
-    u.status     = states[Math.floor(Math.random() * states.length)];
-    renderOnlineList();
-    renderUserPills();
-  }, 8000);
 
-  // Simulate a teammate adding an event
-  setInterval(() => {
-    const teammates = USERS.filter((_, i) => i !== currentUserIndex);
-    const u         = teammates[Math.floor(Math.random() * teammates.length)];
-    showToast(`${u.name} added a new event`, u.color);
-  }, 30000);
-}
 
 /* ── AUTO-REFRESH COUNTDOWNS ────────────────────────────────── */
 
@@ -1203,4 +1154,3 @@ document.getElementById('evLabelInput')
 
 loadEvents();
 renderAll();
-simulateRealtime();
