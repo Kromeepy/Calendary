@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time Time Management System</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; padding: 20px; }
+        #calendar-container { flex: 3; margin-right: 20px; }
+        #urgency-sidebar { flex: 1; background: #f4f4f4; padding: 15px; border-radius: 8px; }
+        .event-card { padding: 10px; margin-bottom: 10px; border-radius: 5px; color: white; }
+        .high-urgency { background-color: #ff4d4d; } /* Red for High */
+        .medium-urgency { background-color: #ffaa00; } /* Orange for Medium */
+        .low-urgency { background-color: #33cc33; } /* Green for Low */
+    </style>
+</head>
+<body>
+
+    <div id="calendar-container">
+        <div id='calendar'></div>
+    </div>
+
+    <div id="urgency-sidebar">
+        <h3>Urgent Events</h3>
+        <div id="countdown-list">
+            </div>
+    </div>
+
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
