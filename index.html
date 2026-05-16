@@ -7,485 +7,681 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <style>
-  /* ── DESIGN TOKENS ── */
-  :root {
-    --bg:       #0e0f14;
-    --surface:  #16181f;
-    --surface2: #1e2029;
-    --border:   rgba(255,255,255,0.07);
-    --border2:  rgba(255,255,255,0.13);
-    --text:     #f0f0f2;
-    --muted:    #7a7d8c;
-    --accent:   #6c63ff;
-    --accent2:  #a594ff;
-    --font-display: 'DM Serif Display', serif;
-    --font-body:    'DM Sans', sans-serif;
-    --urgency-critical: #f87171;
-    --urgency-high:     #fb923c;
-    --urgency-medium:   #fbbf24;
-    --urgency-low:      #34d399;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; }
-  body {
-    font-family: var(--font-body);
-    background: var(--bg);
-    color: var(--text);
-    display: flex; flex-direction: column; min-height: 100vh; font-size: 14px;
-  }
+/* ─────────────────────────────────────────────
+   TOKENS
+───────────────────────────────────────────── */
+:root {
+  --bg:       #0e0f14;
+  --surface:  #16181f;
+  --surface2: #1e2029;
+  --border:   rgba(255,255,255,0.07);
+  --border2:  rgba(255,255,255,0.13);
+  --text:     #f0f0f2;
+  --muted:    #7a7d8c;
+  --accent:   #6c63ff;
+  --accent2:  #a594ff;
+  --font-d:   'DM Serif Display', serif;
+  --font-b:   'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: var(--font-b); background: var(--bg); color: var(--text); font-size: 14px; }
 
-  /* ── HEADER ── */
-  header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 24px; height: 56px; border-bottom: 1px solid var(--border);
-    background: var(--surface); position: sticky; top: 0; z-index: 100; gap: 16px;
-  }
-  .logo { font-family: var(--font-display); font-size: 22px; letter-spacing: -0.5px; }
-  .logo span { color: var(--accent2); }
-  .header-right { display: flex; align-items: center; gap: 10px; }
-  .online-users { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
-  .status-dot        { width: 7px;  height: 7px;  border-radius: 50%; }
-  .status-dot.online { background: #34d399; }
-  .status-dot.away   { background: #fbbf24; }
-  .status-dot.busy   { background: #f87171; }
-  .online-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: #34d399; border: 2px solid var(--surface2); margin-left: 2px;
-  }
+/* ─────────────────────────────────────────────
+   AUTH OVERLAY
+───────────────────────────────────────────── */
+#authOverlay {
+  position: fixed; inset: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg);
+  /* subtle grid pattern */
+  background-image:
+    linear-gradient(rgba(108,99,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(108,99,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
 
-  /* ── CURRENT-USER SWITCHER ── */
-  .user-switcher-wrap { position: relative; }
-  .user-pill {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface2); border: 1px solid var(--border2);
-    border-radius: 20px; padding: 4px 12px 4px 4px; cursor: pointer;
-    transition: border-color 0.2s; user-select: none;
-  }
-  .user-pill:hover { border-color: var(--accent); }
-  .user-dropdown {
-    display: none; flex-direction: column;
-    position: absolute; top: calc(100% + 8px); right: 0;
-    background: var(--surface); border: 1px solid var(--border2);
-    border-radius: 10px; padding: 6px; min-width: 180px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 200; gap: 2px;
-  }
-  .user-dropdown-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 7px 10px; border-radius: 7px; cursor: pointer; font-size: 13px;
-    transition: background 0.15s;
-  }
-  .user-dropdown-item:hover  { background: var(--surface2); }
-  .user-dropdown-item.active { background: rgba(108,99,255,0.15); }
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 18px;
+  padding: 40px 36px;
+  width: 420px;
+  max-width: 95vw;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
 
-  /* ── AVATAR ── */
-  .avatar {
-    width: 26px; height: 26px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0;
-  }
+.auth-logo {
+  font-family: var(--font-d);
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.auth-logo span { color: var(--accent2); }
 
-  /* ── BUTTONS ── */
-  .btn {
-    background: var(--accent); color: #fff; border: none;
-    padding: 7px 16px; border-radius: 8px; font-family: var(--font-body);
-    font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.2s;
-  }
-  .btn:hover { opacity: 0.85; }
-  .btn-ghost {
-    background: transparent; color: var(--text); border: 1px solid var(--border2);
-    border-radius: 8px; padding: 6px 14px; cursor: pointer;
-    font-family: var(--font-body); font-size: 13px;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .btn-ghost:hover { border-color: var(--accent); background: rgba(108,99,255,0.08); }
-  .btn-danger {
-    background: rgba(248,113,113,0.15); color: #f87171;
-    border: 1px solid rgba(248,113,113,0.3); border-radius: 8px;
-    padding: 7px 14px; font-family: var(--font-body); font-size: 13px;
-    cursor: pointer; transition: background 0.2s;
-  }
-  .btn-danger:hover { background: rgba(248,113,113,0.28); }
+.auth-tagline {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 32px;
+}
 
-  /* ── LAYOUT ── */
-  .app { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 56px); }
+.auth-heading {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 22px;
+}
 
-  /* ── SIDEBAR ── */
-  .sidebar {
-    width: 260px; flex-shrink: 0; border-right: 1px solid var(--border);
-    background: var(--surface); display: flex; flex-direction: column;
-    overflow-y: auto; padding: 20px 0;
-  }
-  .sidebar-section { padding: 0 16px 20px; }
-  .sidebar-label {
-    font-size: 10px; font-weight: 600; letter-spacing: 1px;
-    text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
-  }
-  .nav-month { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-  .nav-month-name { font-weight: 600; font-size: 14px; }
-  .nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 2px 6px; border-radius: 4px; }
-  .nav-btn:hover { color: var(--text); background: var(--surface2); }
-  .mini-cal { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
-  .mini-cal .day-name { font-size: 10px; color: var(--muted); text-align: center; padding: 2px; }
-  .mini-day {
-    position: relative; aspect-ratio: 1;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 11px; border-radius: 4px; cursor: pointer; transition: background 0.15s;
-  }
-  .mini-day:hover       { background: var(--surface2); }
-  .mini-day.today       { background: var(--accent); color: #fff; }
-  .mini-day.selected    { border: 1px solid var(--accent); color: var(--accent2); }
-  .mini-day.other-month { color: var(--muted); opacity: 0.4; }
-  .mini-day.has-event::after {
-    content: ''; display: block; width: 3px; height: 3px; border-radius: 50%;
-    background: var(--accent2); position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
-  }
-  .category-list { display: flex; flex-direction: column; gap: 6px; }
-  .cat-item {
-    display: flex; align-items: center; gap: 8px;
-    padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.15s;
-  }
-  .cat-item:hover { background: var(--surface2); }
-  .cat-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-  .cat-name  { flex: 1; font-size: 13px; }
-  .cat-count { font-size: 11px; background: var(--surface2); border-radius: 10px; padding: 1px 7px; color: var(--muted); }
-  .online-list { display: flex; flex-direction: column; gap: 6px; }
-  .online-item { display: flex; align-items: center; gap: 8px; padding: 4px 8px; }
-  .online-name { font-size: 13px; }
+.auth-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+.auth-field label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 500;
+}
+.auth-input {
+  background: var(--surface2);
+  border: 1px solid var(--border2);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 13px;
+  padding: 10px 13px;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.auth-input:focus       { outline: none; border-color: var(--accent); }
+.auth-input.input-error { border-color: #f87171; }
 
-  /* ── MAIN ── */
-  .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .cal-toolbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 24px; border-bottom: 1px solid var(--border);
-    background: var(--surface); gap: 12px; flex-wrap: wrap;
-  }
-  .cal-nav   { display: flex; align-items: center; gap: 8px; }
-  .cal-title { font-family: var(--font-display); font-size: 20px; min-width: 200px; }
-  .view-switcher { display: flex; background: var(--surface2); border-radius: 8px; padding: 3px; gap: 2px; }
-  .view-btn {
-    padding: 5px 14px; border-radius: 6px; border: none;
-    background: transparent; color: var(--muted); font-family: var(--font-body);
-    font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s;
-  }
-  .view-btn.active { background: var(--accent); color: #fff; }
+.auth-error {
+  font-size: 11px;
+  color: #f87171;
+  min-height: 14px;
+  margin-top: 2px;
+}
 
-  /* ── WEEK/DAY GRID ── */
-  .week-wrapper { flex: 1; overflow: auto; }
-  .week-header-cell {
-    position: sticky; top: 0; z-index: 10;
-    background: var(--surface); border-bottom: 1px solid var(--border);
-    padding: 10px 6px; text-align: center;
-  }
-  .week-header-cell.day-col {
-    border-right: 1px solid var(--border);
-    display: flex; flex-direction: column; align-items: center; gap: 2px;
-  }
-  .day-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-  .day-num {
-    width: 28px; height: 28px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 600;
-  }
-  .day-num.today-num { background: var(--accent); color: #fff; }
-  .time-slot {
-    grid-column: 1; height: 56px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: flex-start; padding: 0 8px;
-    color: var(--muted); font-size: 10px; position: relative; top: -6px;
-  }
-  .day-column { border-left: 1px solid var(--border); position: relative; min-height: 56px; }
-  .now-line {
-    position: absolute; left: 0; right: 0; height: 2px;
-    background: var(--urgency-critical); z-index: 5; pointer-events: none;
-  }
-  .now-line::before {
-    content: ''; position: absolute; left: -4px; top: -4px;
-    width: 10px; height: 10px; border-radius: 50%; background: var(--urgency-critical);
-  }
+.auth-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 9px;
+  padding: 12px;
+  font-family: var(--font-b);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+.auth-btn:hover  { opacity: 0.88; }
+.auth-btn:active { transform: scale(0.98); }
 
-  /* ── CALENDAR EVENT BLOCK ── */
-  .cal-event {
-    position: absolute; left: 3px; right: 3px; border-radius: 6px; padding: 4px 7px;
-    font-size: 11px; line-height: 1.35; cursor: pointer; overflow: hidden;
-    transition: filter 0.15s, transform 0.15s; z-index: 2;
-  }
-  .cal-event:hover { filter: brightness(1.15); transform: translateX(1px); }
-  .cal-event .ev-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .cal-event .ev-time  { opacity: 0.75; font-size: 10px; }
-  .ev-urgency-badge {
-    display: inline-block; padding: 1px 5px; border-radius: 3px;
-    font-size: 9px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.5px; margin-top: 2px;
-  }
-  .ev-countdown { font-size: 9px; opacity: 0.8; margin-top: 1px; }
+.auth-divider {
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+  margin: 18px 0 4px;
+}
+.auth-divider a {
+  color: var(--accent2);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.auth-divider a:hover { opacity: 0.8; }
 
-  /* ── AUTHOR CHIP ── */
-  .author-chip {
-    display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;
-    border-radius: 10px; background: rgba(0,0,0,0.2); padding: 2px 6px 2px 2px;
-  }
-  .author-av {
-    border-radius: 50%; display: inline-flex; align-items: center;
-    justify-content: center; font-weight: 700; color: #fff; flex-shrink: 0;
-  }
+/* password strength bar */
+.pw-strength-wrap {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.pw-strength-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s, background 0.3s;
+}
+.pw-strength-label {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 3px;
+}
 
-  /* ── MONTH GRID ── */
-  .month-day-header {
-    text-align: center; padding: 8px 0; font-size: 10px;
-    text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted);
-    border-bottom: 1px solid var(--border);
-    background: var(--surface); position: sticky; top: 0; z-index: 5;
-  }
-  .month-cell {
-    border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    min-height: 110px; padding: 6px; position: relative; cursor: pointer; transition: background 0.15s;
-  }
-  .month-cell:hover          { background: rgba(255,255,255,0.02); }
-  .month-cell.today-cell     { background: rgba(108,99,255,0.06); }
-  .month-cell.other-month-cell { opacity: 0.35; }
-  .month-date-num {
-    font-size: 12px; font-weight: 600; margin-bottom: 4px;
-    width: 22px; height: 22px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-  }
-  .month-date-num.today-cell-num { background: var(--accent); color: #fff; }
-  .month-event {
-    display: flex; align-items: center; font-size: 10px; padding: 2px 5px;
-    border-radius: 3px; margin-bottom: 2px; overflow: hidden; cursor: pointer; font-weight: 500;
-  }
-  .month-event span:first-child { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .month-more { font-size: 10px; color: var(--muted); cursor: pointer; padding: 1px 4px; }
-  .month-more:hover { color: var(--accent2); }
+/* ─────────────────────────────────────────────
+   APP SHELL
+───────────────────────────────────────────── */
+#appShell {
+  display: none;   /* shown after login */
+  flex-direction: column;
+  height: 100vh;
+}
 
-  /* ── EVENT PANEL ── */
-  .event-panel {
-    width: 320px; flex-shrink: 0; border-left: 1px solid var(--border);
-    background: var(--surface); display: flex; flex-direction: column;
-    overflow-y: auto; transition: width 0.3s;
-  }
-  .event-panel.hidden { width: 0; overflow: hidden; }
-  .panel-header {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px; border-bottom: 1px solid var(--border);
-    font-weight: 600; font-size: 15px;
-  }
-  .close-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; }
-  .close-btn:hover { color: var(--text); }
-  .panel-events { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
-  .panel-event-card {
-    border-radius: 10px; padding: 12px 14px; border-left: 3px solid transparent;
-    cursor: pointer; transition: filter 0.15s;
-  }
-  .panel-event-card:hover { filter: brightness(1.08); }
-  .pev-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
-  .pev-time  { font-size: 12px; opacity: 0.75; }
-  .pev-meta  { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-  .badge     { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-  .pev-countdown { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.7); }
-  .countdown-bar-wrap { height: 3px; background: rgba(0,0,0,0.25); border-radius: 2px; margin-top: 6px; overflow: hidden; }
-  .countdown-bar      { height: 100%; border-radius: 2px; transition: width 1s; }
-  .pev-labels { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
-  .label-tag  { padding: 2px 7px; border-radius: 10px; font-size: 10px; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
-  .pev-desc   { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; line-height: 1.5; }
+/* ─────────────────────────────────────────────
+   HEADER
+───────────────────────────────────────────── */
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  position: sticky; top: 0; z-index: 100; gap: 16px; flex-shrink: 0;
+}
+.logo { font-family: var(--font-d); font-size: 22px; letter-spacing: -0.5px; }
+.logo span { color: var(--accent2); }
+.online-users { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+.status-dot        { width: 7px; height: 7px; border-radius: 50%; }
+.status-dot.online { background: #34d399; }
+.online-dot        { width: 8px; height: 8px; border-radius: 50%; background: #34d399; border: 2px solid var(--surface2); margin-left: 2px; }
 
-  /* ── MODAL ── */
-  .modal-overlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
-    display: flex; align-items: center; justify-content: center;
-    opacity: 0; pointer-events: none; transition: opacity 0.2s;
-  }
-  .modal-overlay.open { opacity: 1; pointer-events: all; }
-  .modal {
-    background: var(--surface); border: 1px solid var(--border2);
-    border-radius: 14px; width: 520px; max-width: 95vw; max-height: 90vh;
-    overflow-y: auto; padding: 28px; position: relative;
-    transform: translateY(10px); transition: transform 0.2s;
-  }
-  .modal-overlay.open .modal { transform: translateY(0); }
-  .modal h2 { font-family: var(--font-display); font-size: 22px; margin-bottom: 20px; }
-  .form-row { margin-bottom: 14px; }
-  .form-row label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
-  .form-row input,
-  .form-row textarea,
-  .form-row select {
-    width: 100%; background: var(--surface2); border: 1px solid var(--border2);
-    border-radius: 8px; color: var(--text); font-family: var(--font-body);
-    padding: 9px 12px; font-size: 13px;
-  }
-  .form-row textarea { min-height: 70px; resize: vertical; }
-  .form-row input:focus,
-  .form-row textarea:focus,
-  .form-row select:focus { outline: none; border-color: var(--accent); }
-  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+/* User pills (event authors) */
+#userPills { display: flex; align-items: center; gap: 4px; }
+.user-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 16px; padding: 3px 10px 3px 3px; cursor: default;
+  font-size: 12px;
+}
 
-  /* ── AUTHOR PREVIEW (in modal) ── */
-  .author-preview {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface2); border: 1px solid var(--border2);
-    border-radius: 8px; padding: 8px 12px; font-size: 13px;
-  }
+/* Profile button + dropdown */
+.profile-wrap { position: relative; }
+.profile-btn {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 20px; padding: 4px 12px 4px 4px;
+  cursor: pointer; transition: border-color 0.2s; user-select: none;
+}
+.profile-btn:hover { border-color: var(--accent); }
 
-  /* ── COLOR SWATCHES ── */
-  .color-swatch-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-  .color-swatch {
-    width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
-    border: 2px solid transparent; transition: border-color 0.15s;
-  }
-  .color-swatch.selected { border-color: #fff; }
+#profileDrop {
+  display: none; flex-direction: column;
+  position: absolute; top: calc(100% + 8px); right: 0;
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 10px; min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5); z-index: 200; overflow: hidden;
+}
+.profile-drop-item {
+  padding: 10px 16px; font-size: 13px; cursor: pointer;
+  transition: background 0.15s;
+}
+.profile-drop-item:hover        { background: var(--surface2); }
+.profile-drop-danger            { color: #f87171; }
+.profile-drop-danger:hover      { background: rgba(248,113,113,0.1); }
 
-  /* ── URGENCY OPTS ── */
-  .urgency-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-  .urgency-opt {
-    padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border2);
-    cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.15s;
-  }
+/* ─────────────────────────────────────────────
+   AVATAR
+───────────────────────────────────────────── */
+.avatar {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: #fff; flex-shrink: 0;
+}
 
-  /* ── LABEL CHIPS ── */
-  .label-input-wrap { display: flex; gap: 6px; }
-  .label-chips      { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
-  .label-chip {
-    background: var(--surface2); border-radius: 10px; padding: 3px 10px;
-    font-size: 11px; display: flex; align-items: center; gap: 4px;
-    border: 1px solid var(--border2);
-  }
-  .label-chip button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; line-height: 1; }
+/* ─────────────────────────────────────────────
+   BUTTONS
+───────────────────────────────────────────── */
+.btn {
+  background: var(--accent); color: #fff; border: none;
+  padding: 7px 16px; border-radius: 8px; font-family: var(--font-b);
+  font-size: 13px; font-weight: 500; cursor: pointer; transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.85; }
+.btn-ghost {
+  background: transparent; color: var(--text);
+  border: 1px solid var(--border2); border-radius: 8px;
+  padding: 6px 14px; cursor: pointer; font-family: var(--font-b); font-size: 13px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.btn-ghost:hover { border-color: var(--accent); background: rgba(108,99,255,0.08); }
+.btn-danger {
+  background: rgba(248,113,113,0.15); color: #f87171;
+  border: 1px solid rgba(248,113,113,0.3); border-radius: 8px;
+  padding: 7px 14px; font-family: var(--font-b); font-size: 13px;
+  cursor: pointer; transition: background 0.2s;
+}
+.btn-danger:hover { background: rgba(248,113,113,0.28); }
 
-  /* ── MODAL ACTIONS ── */
-  .modal-actions       { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 8px; }
-  .modal-actions-right { display: flex; gap: 8px; }
+/* ─────────────────────────────────────────────
+   LAYOUT
+───────────────────────────────────────────── */
+.app { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 56px); }
 
-  /* ── TOAST ── */
-  .toast-wrap { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 300; }
-  .toast {
-    background: var(--surface); border: 1px solid var(--border2);
-    border-radius: 10px; padding: 10px 16px; font-size: 13px;
-    display: flex; align-items: center; gap: 8px;
-    animation: slideUp 0.3s ease; max-width: 300px;
-  }
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+/* ─────────────────────────────────────────────
+   SIDEBAR
+───────────────────────────────────────────── */
+.sidebar {
+  width: 260px; flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  display: flex; flex-direction: column;
+  overflow-y: auto; padding: 20px 0;
+}
+.sidebar-section { padding: 0 16px 20px; }
+.sidebar-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+}
+.nav-month { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.nav-month-name { font-weight: 600; font-size: 14px; }
+.nav-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 2px 6px; border-radius: 4px; }
+.nav-btn:hover { color: var(--text); background: var(--surface2); }
 
-  /* ── KEYBOARD HINT BAR ── */
-  .kbd-hint {
-    font-size: 10px; color: var(--muted); display: flex; gap: 12px;
-    padding: 6px 24px; border-top: 1px solid var(--border);
-    background: var(--surface); flex-wrap: wrap;
-  }
-  .kbd-hint kbd {
-    background: var(--surface2); border: 1px solid var(--border2);
-    border-radius: 3px; padding: 1px 5px; font-size: 10px; font-family: monospace;
-  }
+.mini-cal { display: grid; grid-template-columns: repeat(7,1fr); gap: 2px; }
+.mini-cal .day-name { font-size: 10px; color: var(--muted); text-align: center; padding: 2px; }
+.mini-day {
+  position: relative; aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; border-radius: 4px; cursor: pointer; transition: background 0.15s;
+}
+.mini-day:hover       { background: var(--surface2); }
+.mini-day.today       { background: var(--accent); color: #fff; }
+.mini-day.selected    { border: 1px solid var(--accent); color: var(--accent2); }
+.mini-day.other-month { color: var(--muted); opacity: 0.4; }
+.mini-day.has-event::after {
+  content: ''; display: block; width: 3px; height: 3px; border-radius: 50%;
+  background: var(--accent2); position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+}
 
-  /* ── RESPONSIVE ── */
-  @media (max-width: 960px) { .sidebar    { display: none; } }
-  @media (max-width: 720px) { .event-panel { display: none; } .kbd-hint { display: none; } }
+.category-list { display: flex; flex-direction: column; gap: 6px; }
+.cat-item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 6px; cursor: pointer; transition: background 0.15s; }
+.cat-item:hover { background: var(--surface2); }
+.cat-dot   { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cat-name  { flex: 1; font-size: 13px; }
+.cat-count { font-size: 11px; background: var(--surface2); border-radius: 10px; padding: 1px 7px; color: var(--muted); }
+
+.online-list { display: flex; flex-direction: column; gap: 6px; }
+.online-item { display: flex; align-items: center; gap: 8px; padding: 4px 8px; }
+.online-name { font-size: 13px; }
+
+/* ─────────────────────────────────────────────
+   MAIN
+───────────────────────────────────────────── */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.cal-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px; border-bottom: 1px solid var(--border);
+  background: var(--surface); gap: 12px; flex-wrap: wrap;
+}
+.cal-nav   { display: flex; align-items: center; gap: 8px; }
+.cal-title { font-family: var(--font-d); font-size: 20px; min-width: 200px; }
+.view-switcher { display: flex; background: var(--surface2); border-radius: 8px; padding: 3px; gap: 2px; }
+.view-btn { padding: 5px 14px; border-radius: 6px; border: none; background: transparent; color: var(--muted); font-family: var(--font-b); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+.view-btn.active { background: var(--accent); color: #fff; }
+
+/* ─────────────────────────────────────────────
+   WEEK / DAY GRID
+───────────────────────────────────────────── */
+.week-wrapper { flex: 1; overflow: auto; }
+.week-header-cell {
+  position: sticky; top: 0; z-index: 10; background: var(--surface);
+  border-bottom: 1px solid var(--border); padding: 10px 6px; text-align: center;
+}
+.week-header-cell.day-col { border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.day-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.day-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; }
+.day-num.today-num { background: var(--accent); color: #fff; }
+.time-slot { height: 56px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; padding: 0 8px; color: var(--muted); font-size: 10px; position: relative; top: -6px; }
+.day-column { border-left: 1px solid var(--border); position: relative; min-height: 56px; }
+.now-line { position: absolute; left: 0; right: 0; height: 2px; background: #f87171; z-index: 5; pointer-events: none; }
+.now-line::before { content: ''; position: absolute; left: -4px; top: -4px; width: 10px; height: 10px; border-radius: 50%; background: #f87171; }
+
+.cal-event { position: absolute; left: 3px; right: 3px; border-radius: 6px; padding: 4px 7px; font-size: 11px; line-height: 1.35; cursor: pointer; overflow: hidden; transition: filter 0.15s, transform 0.15s; z-index: 2; }
+.cal-event:hover { filter: brightness(1.15); transform: translateX(1px); }
+.cal-event .ev-title { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cal-event .ev-time  { opacity: 0.75; font-size: 10px; }
+.ev-urgency-badge { display: inline-block; padding: 1px 5px; border-radius: 3px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.ev-countdown { font-size: 9px; opacity: 0.8; margin-top: 1px; }
+
+/* ─────────────────────────────────────────────
+   AUTHOR CHIP
+───────────────────────────────────────────── */
+.author-chip { display: inline-flex; align-items: center; gap: 4px; margin-top: 4px; border-radius: 10px; background: rgba(0,0,0,0.2); padding: 2px 6px 2px 2px; }
+.author-av   { border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; color: #fff; flex-shrink: 0; }
+
+/* ─────────────────────────────────────────────
+   MONTH GRID
+───────────────────────────────────────────── */
+.month-day-header { text-align: center; padding: 8px 0; font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--surface); position: sticky; top: 0; z-index: 5; }
+.month-cell { border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); min-height: 110px; padding: 6px; position: relative; cursor: pointer; transition: background 0.15s; }
+.month-cell:hover            { background: rgba(255,255,255,0.02); }
+.month-cell.today-cell       { background: rgba(108,99,255,0.06); }
+.month-cell.other-month-cell { opacity: 0.35; }
+.month-date-num { font-size: 12px; font-weight: 600; margin-bottom: 4px; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.month-date-num.today-cell-num { background: var(--accent); color: #fff; }
+.month-event { display: flex; align-items: center; font-size: 10px; padding: 2px 5px; border-radius: 3px; margin-bottom: 2px; overflow: hidden; cursor: pointer; font-weight: 500; }
+.month-event span:first-child { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.month-more { font-size: 10px; color: var(--muted); cursor: pointer; padding: 1px 4px; }
+.month-more:hover { color: var(--accent2); }
+
+/* ─────────────────────────────────────────────
+   EVENT PANEL
+───────────────────────────────────────────── */
+.event-panel { width: 320px; flex-shrink: 0; border-left: 1px solid var(--border); background: var(--surface); display: flex; flex-direction: column; overflow-y: auto; transition: width 0.3s; }
+.event-panel.hidden { width: 0; overflow: hidden; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); font-weight: 600; font-size: 15px; }
+.close-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; }
+.close-btn:hover { color: var(--text); }
+.panel-events { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.panel-event-card { border-radius: 10px; padding: 12px 14px; border-left: 3px solid transparent; transition: filter 0.15s; }
+.panel-event-card:hover { filter: brightness(1.05); }
+.pev-title { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+.pev-time  { font-size: 12px; opacity: 0.75; }
+.pev-meta  { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.badge     { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.pev-countdown  { font-size: 12px; margin-top: 6px; display: flex; align-items: center; gap: 6px; color: rgba(255,255,255,0.7); }
+.countdown-bar-wrap { height: 3px; background: rgba(0,0,0,0.25); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.countdown-bar      { height: 100%; border-radius: 2px; transition: width 1s; }
+.pev-labels { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.label-tag  { padding: 2px 7px; border-radius: 10px; font-size: 10px; border: 1px solid rgba(255,255,255,0.2); color: rgba(255,255,255,0.8); }
+.pev-desc   { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 6px; line-height: 1.5; }
+
+/* Panel action buttons */
+.pev-action-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 5px; color: rgba(255,255,255,0.5); cursor: pointer; font-size: 12px; line-height: 1; padding: 3px 7px; transition: all 0.15s; }
+.pev-edit-btn:hover   { background: rgba(108,99,255,0.2); border-color: var(--accent); color: var(--accent2); }
+.pev-delete-btn:hover { background: rgba(248,113,113,0.2); border-color: #f87171; color: #f87171; }
+
+/* Inline delete confirm */
+.pev-confirm-row  { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 10px; padding-top: 10px; }
+.pev-confirm-yes  { background: rgba(248,113,113,0.2); color: #f87171; border: 1px solid rgba(248,113,113,0.4); border-radius: 6px; padding: 4px 12px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--font-b); }
+.pev-confirm-no   { background: var(--surface2); color: var(--muted); border: 1px solid var(--border2); border-radius: 6px; padding: 4px 12px; font-size: 12px; cursor: pointer; font-family: var(--font-b); }
+.pev-confirm-yes:hover { background: rgba(248,113,113,0.35); }
+.pev-confirm-no:hover  { color: var(--text); }
+
+/* ─────────────────────────────────────────────
+   EVENT MODAL
+───────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 14px; width: 520px; max-width: 95vw; max-height: 90vh;
+  overflow-y: auto; padding: 28px;
+  transform: translateY(10px); transition: transform 0.2s;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal h2 { font-family: var(--font-d); font-size: 22px; margin-bottom: 20px; }
+.form-row { margin-bottom: 14px; }
+.form-row label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; font-weight: 500; }
+.form-row input,
+.form-row textarea,
+.form-row select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--text); font-family: var(--font-b);
+  padding: 9px 12px; font-size: 13px;
+}
+.form-row textarea { min-height: 70px; resize: vertical; }
+.form-row input:focus,
+.form-row textarea:focus,
+.form-row select:focus   { outline: none; border-color: var(--accent); }
+.form-row input:disabled,
+.form-row textarea:disabled,
+.form-row select:disabled { opacity: 0.5; cursor: not-allowed; }
+.form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.author-preview { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.color-swatch-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.color-swatch { width: 26px; height: 26px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: border-color 0.15s; }
+.color-swatch.selected { border-color: #fff; }
+.urgency-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+.urgency-opt { padding: 5px 12px; border-radius: 6px; border: 1px solid var(--border2); cursor: pointer; font-size: 12px; font-weight: 500; transition: all 0.15s; }
+.label-input-wrap { display: flex; gap: 6px; }
+.label-chips { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 6px; }
+.label-chip { background: var(--surface2); border-radius: 10px; padding: 3px 10px; font-size: 11px; display: flex; align-items: center; gap: 4px; border: 1px solid var(--border2); }
+.label-chip button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; line-height: 1; }
+.modal-actions       { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 8px; }
+.modal-actions-right { display: flex; gap: 8px; }
+
+/* ─────────────────────────────────────────────
+   PROFILE EDIT MODAL
+───────────────────────────────────────────── */
+#profileEditOverlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 300;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity 0.2s;
+}
+#profileEditOverlay.open { opacity: 1; pointer-events: all; }
+.profile-edit-card {
+  background: var(--surface); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 28px; width: 380px; max-width: 95vw;
+}
+.profile-edit-card h3 { font-family: var(--font-d); font-size: 20px; margin-bottom: 20px; }
+
+/* ─────────────────────────────────────────────
+   TOAST
+───────────────────────────────────────────── */
+.toast-wrap { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 8px; z-index: 400; }
+.toast { background: var(--surface); border: 1px solid var(--border2); border-radius: 10px; padding: 10px 16px; font-size: 13px; display: flex; align-items: center; gap: 8px; animation: slideUp 0.3s ease; max-width: 320px; }
+@keyframes slideUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+.toast-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ─────────────────────────────────────────────
+   KEYBOARD HINT BAR
+───────────────────────────────────────────── */
+.kbd-hint { font-size: 10px; color: var(--muted); display: flex; gap: 12px; padding: 6px 24px; border-top: 1px solid var(--border); background: var(--surface); flex-wrap: wrap; flex-shrink: 0; }
+.kbd-hint kbd { background: var(--surface2); border: 1px solid var(--border2); border-radius: 3px; padding: 1px 5px; font-size: 10px; font-family: monospace; }
+
+/* ─────────────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────────────── */
+@media (max-width: 960px) { .sidebar { display: none; } }
+@media (max-width: 720px) { .event-panel { display: none; } .kbd-hint { display: none; } }
 </style>
 </head>
 <body>
 
-<!-- ── HEADER ── -->
-<header>
-  <span class="logo">Chrono<span>Sync</span></span>
+<!-- ══════════════════════════════════════════
+     AUTH OVERLAY
+══════════════════════════════════════════ -->
+<div id="authOverlay">
 
-  <div style="display:flex;align-items:center;gap:14px">
-    <div class="online-users">
-      <span class="status-dot online"></span>
-      <span id="onlineText">3 online</span>
+  <!-- LOGIN -->
+  <div class="auth-card" id="loginBox" style="display:flex;flex-direction:column">
+    <div class="auth-logo">Chrono<span>Sync</span></div>
+    <div class="auth-tagline">Your collaborative time management calendar</div>
+
+    <div class="auth-heading">Sign in</div>
+
+    <div class="auth-field">
+      <label>Email address</label>
+      <input class="auth-input" type="email" id="loginEmail"
+             placeholder="you@example.com"
+             onkeydown="loginOnEnter(event)" />
+      <span class="auth-error" id="loginEmailErr"></span>
     </div>
 
-    <!-- Team avatar strip (other users) -->
-    <div class="header-right" id="userPills"></div>
-
-    <!-- Active-user switcher -->
-    <div class="user-switcher-wrap">
-      <div class="user-pill" id="currentUserBtn" onclick="toggleUserDropdown()">
-        <!-- filled by JS -->
-      </div>
-      <div class="user-dropdown" id="userDropdown">
-        <!-- filled by JS -->
-      </div>
+    <div class="auth-field">
+      <label>Password</label>
+      <input class="auth-input" type="password" id="loginPw"
+             placeholder="••••••••"
+             onkeydown="loginOnEnter(event)" />
+      <span class="auth-error" id="loginPwErr"></span>
     </div>
 
-    <button class="btn" onclick="openModal()">+ New Event</button>
+    <button class="auth-btn" onclick="handleLogin()">Sign in</button>
+
+    <div class="auth-divider">
+      Don't have an account?
+      <a onclick="showAuthScreen('register')">Create one</a>
+    </div>
   </div>
-</header>
 
-<div class="app">
+  <!-- REGISTER -->
+  <div class="auth-card" id="registerBox" style="display:none;flex-direction:column">
+    <div class="auth-logo">Chrono<span>Sync</span></div>
+    <div class="auth-tagline">Create your free account</div>
 
-  <!-- ── SIDEBAR ── -->
-  <div class="sidebar">
-    <div class="sidebar-section">
-      <div class="nav-month">
-        <span class="nav-month-name" id="miniMonthLabel"></span>
-        <div style="display:flex;gap:2px">
-          <button class="nav-btn" onclick="miniNavMonth(-1)">‹</button>
-          <button class="nav-btn" onclick="miniNavMonth(1)">›</button>
+    <div class="auth-heading">Create account</div>
+
+    <div class="auth-field">
+      <label>Full name</label>
+      <input class="auth-input" type="text" id="regName"
+             placeholder="Jane Smith"
+             onkeydown="registerOnEnter(event)" />
+      <span class="auth-error" id="regNameErr"></span>
+    </div>
+
+    <div class="auth-field">
+      <label>Email address</label>
+      <input class="auth-input" type="email" id="regEmail"
+             placeholder="you@example.com"
+             onkeydown="registerOnEnter(event)" />
+      <span class="auth-error" id="regEmailErr"></span>
+    </div>
+
+    <div class="auth-field">
+      <label>Password <span style="color:var(--muted);font-size:10px">(min 6 characters)</span></label>
+      <input class="auth-input" type="password" id="regPw"
+             placeholder="••••••••"
+             oninput="updatePwStrength(this.value)"
+             onkeydown="registerOnEnter(event)" />
+      <div class="pw-strength-wrap">
+        <div class="pw-strength-bar" id="pwBar" style="width:0%;background:#f87171"></div>
+      </div>
+      <div class="pw-strength-label" id="pwLabel"></div>
+      <span class="auth-error" id="regPwErr"></span>
+    </div>
+
+    <div class="auth-field">
+      <label>Confirm password</label>
+      <input class="auth-input" type="password" id="regPw2"
+             placeholder="••••••••"
+             onkeydown="registerOnEnter(event)" />
+      <span class="auth-error" id="regPw2Err"></span>
+    </div>
+
+    <button class="auth-btn" onclick="handleRegister()">Create account</button>
+
+    <div class="auth-divider">
+      Already have an account?
+      <a onclick="showAuthScreen('login')">Sign in</a>
+    </div>
+  </div>
+
+</div><!-- /#authOverlay -->
+
+
+<!-- ══════════════════════════════════════════
+     APP SHELL
+══════════════════════════════════════════ -->
+<div id="appShell">
+
+  <!-- HEADER -->
+  <header>
+    <span class="logo">Chrono<span>Sync</span></span>
+
+    <div style="display:flex;align-items:center;gap:14px">
+      <!-- Members count -->
+      <div class="online-users">
+        <span class="status-dot online"></span>
+        <span id="onlineText">1 member</span>
+      </div>
+
+      <!-- Recent author avatars -->
+      <div id="userPills"></div>
+
+      <!-- Current user profile button -->
+      <div class="profile-wrap">
+        <div class="profile-btn" id="currentUserBtn" onclick="toggleProfileDrop()">
+          <!-- filled by JS -->
+        </div>
+        <div id="profileDrop">
+          <!-- filled by toggleProfileDrop() -->
         </div>
       </div>
-      <div class="mini-cal" id="miniCal"></div>
-    </div>
 
-    <div class="sidebar-section">
-      <div class="sidebar-label">Categories</div>
-      <div class="category-list" id="catList"></div>
+      <button class="btn" onclick="openModal()">+ New Event</button>
     </div>
+  </header>
 
-    <div class="sidebar-section">
-      <div class="sidebar-label">Team Online</div>
-      <div class="online-list" id="onlineList"></div>
-    </div>
-  </div>
+  <!-- MAIN APP -->
+  <div class="app">
 
-  <!-- ── MAIN ── -->
-  <div class="main">
-    <div class="cal-toolbar">
-      <div class="cal-nav">
-        <button class="btn-ghost" onclick="navMain(-1)">‹</button>
-        <button class="btn-ghost" onclick="goToday()" style="padding:6px 12px;font-size:12px">Today</button>
-        <button class="btn-ghost" onclick="navMain(1)">›</button>
-        <span class="cal-title" id="mainTitle"></span>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="nav-month">
+          <span class="nav-month-name" id="miniMonthLabel"></span>
+          <div style="display:flex;gap:2px">
+            <button class="nav-btn" onclick="miniNavMonth(-1)">‹</button>
+            <button class="nav-btn" onclick="miniNavMonth(1)">›</button>
+          </div>
+        </div>
+        <div class="mini-cal" id="miniCal"></div>
       </div>
-      <div class="view-switcher">
-        <button class="view-btn active" id="vMonth" onclick="setView('month')">Month</button>
-        <button class="view-btn"        id="vWeek"  onclick="setView('week')">Week</button>
-        <button class="view-btn"        id="vDay"   onclick="setView('day')">Day</button>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Categories</div>
+        <div class="category-list" id="catList"></div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-label">Members</div>
+        <div class="online-list" id="onlineList"></div>
       </div>
     </div>
 
-    <div style="flex:1;overflow:hidden;display:flex" id="calArea"></div>
+    <!-- CALENDAR -->
+    <div class="main">
+      <div class="cal-toolbar">
+        <div class="cal-nav">
+          <button class="btn-ghost" onclick="navMain(-1)">‹</button>
+          <button class="btn-ghost" onclick="goToday()" style="padding:6px 12px;font-size:12px">Today</button>
+          <button class="btn-ghost" onclick="navMain(1)">›</button>
+          <span class="cal-title" id="mainTitle"></span>
+        </div>
+        <div class="view-switcher">
+          <button class="view-btn active" id="vMonth" onclick="setView('month')">Month</button>
+          <button class="view-btn"        id="vWeek"  onclick="setView('week')">Week</button>
+          <button class="view-btn"        id="vDay"   onclick="setView('day')">Day</button>
+        </div>
+      </div>
 
-    <div class="kbd-hint">
-      <span><kbd>N</kbd> new event</span>
-      <span><kbd>M</kbd> month</span>
-      <span><kbd>W</kbd> week</span>
-      <span><kbd>D</kbd> day</span>
-      <span><kbd>T</kbd> today</span>
-      <span><kbd>←</kbd><kbd>→</kbd> navigate</span>
-      <span><kbd>Esc</kbd> close</span>
+      <div style="flex:1;overflow:hidden;display:flex" id="calArea"></div>
+
+      <div class="kbd-hint">
+        <span><kbd>N</kbd> new event</span>
+        <span><kbd>M</kbd> month</span>
+        <span><kbd>W</kbd> week</span>
+        <span><kbd>D</kbd> day</span>
+        <span><kbd>T</kbd> today</span>
+        <span><kbd>←</kbd><kbd>→</kbd> navigate</span>
+        <span><kbd>Esc</kbd> close</span>
+      </div>
     </div>
-  </div>
 
-  <!-- ── DETAIL PANEL ── -->
-  <div class="event-panel hidden" id="eventPanel">
-    <div class="panel-header">
-      <span id="panelTitle">Events</span>
-      <button class="close-btn"
-              onclick="document.getElementById('eventPanel').classList.add('hidden')">×</button>
+    <!-- EVENT DETAIL PANEL -->
+    <div class="event-panel hidden" id="eventPanel">
+      <div class="panel-header">
+        <span id="panelTitle">Events</span>
+        <button class="close-btn"
+                onclick="document.getElementById('eventPanel').classList.add('hidden')">×</button>
+      </div>
+      <div class="panel-events" id="panelEvents"></div>
     </div>
-    <div class="panel-events" id="panelEvents"></div>
-  </div>
 
-</div><!-- /.app -->
+  </div><!-- /.app -->
+
+</div><!-- /#appShell -->
 
 
-<!-- ── MODAL ── -->
+<!-- ══════════════════════════════════════════
+     EVENT MODAL
+══════════════════════════════════════════ -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <h2 id="modalHeading">Add Event</h2>
 
-    <!-- Author display -->
     <div class="form-row">
       <label>Author</label>
       <div class="author-preview" id="evAuthorPreview"></div>
@@ -544,8 +740,7 @@
       <label>Labels</label>
       <div class="label-input-wrap">
         <input type="text" id="evLabelInput" placeholder="Type a label and press Enter…" style="flex:1" />
-        <button class="btn-ghost" onclick="addLabel()"
-                style="padding:7px 12px;font-size:12px">Add</button>
+        <button class="btn-ghost" onclick="addLabel()" style="padding:7px 12px;font-size:12px">Add</button>
       </div>
       <div class="label-chips" id="labelChips"></div>
     </div>
@@ -556,45 +751,67 @@
       </div>
       <div class="modal-actions-right">
         <button class="btn-ghost" onclick="closeModal()">Cancel</button>
-        <button class="btn"       onclick="saveEvent()">Save Event</button>
+        <button class="btn" id="saveEventBtn" onclick="saveEvent()">Save Event</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ── TOASTS ── -->
+
+<!-- ══════════════════════════════════════════
+     PROFILE EDIT MODAL
+══════════════════════════════════════════ -->
+<div id="profileEditOverlay">
+  <div class="profile-edit-card">
+    <h3>Edit Profile</h3>
+    <div class="form-row">
+      <label>Full Name</label>
+      <input type="text" id="profileEditName" placeholder="Your name" />
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+      <button class="btn-ghost" onclick="closeProfileEdit()">Cancel</button>
+      <button class="btn" onclick="saveProfile()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     TOASTS
+══════════════════════════════════════════ -->
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ── SCRIPTS ── -->
-<script src="app.js"></script>
+
+<!-- ══════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════ -->
 <script>
-  /*
-   * Patch openModal / openEditModal to update the modal heading
-   * and toggle the Delete button. This runs after app.js defines
-   * the base functions.
-   */
-  (function patchModal() {
-    const _open     = openModal;
-    const _openEdit = openEditModal;
-
-    openModal = function(date, time) {
-      _open(date, time);
-      document.getElementById('modalHeading').textContent = 'Add Event';
-      document.getElementById('deleteBtn').style.display  = 'none';
-    };
-
-    openEditModal = function(id) {
-      _openEdit(id);
-      document.getElementById('modalHeading').textContent = 'Edit Event';
-      document.getElementById('deleteBtn').style.display  = 'block';
-      document.getElementById('deleteEventBtn').onclick   = () => deleteEvent(id);
-    };
-
-    // Re-expose to window so inline onclick="" handlers work
-    window.openModal     = openModal;
-    window.openEditModal = openEditModal;
-  })();
+/* Password strength meter (runs before app.js so available on register screen) */
+function updatePwStrength(pw) {
+  const bar   = document.getElementById('pwBar');
+  const label = document.getElementById('pwLabel');
+  if (!pw) { bar.style.width='0%'; label.textContent=''; return; }
+  let score = 0;
+  if (pw.length >= 6)                    score++;
+  if (pw.length >= 10)                   score++;
+  if (/[A-Z]/.test(pw))                  score++;
+  if (/[0-9]/.test(pw))                  score++;
+  if (/[^A-Za-z0-9]/.test(pw))          score++;
+  const levels = [
+    { w:'20%',  bg:'#f87171', t:'Very weak'  },
+    { w:'40%',  bg:'#fb923c', t:'Weak'       },
+    { w:'60%',  bg:'#fbbf24', t:'Fair'       },
+    { w:'80%',  bg:'#34d399', t:'Good'       },
+    { w:'100%', bg:'#4f9cf9', t:'Strong'     }
+  ];
+  const lv = levels[Math.min(score, levels.length) - 1] || levels[0];
+  bar.style.width      = lv.w;
+  bar.style.background = lv.bg;
+  label.textContent    = lv.t;
+  label.style.color    = lv.bg;
+}
 </script>
+<script src="app.js"></script>
 
 </body>
 </html>
